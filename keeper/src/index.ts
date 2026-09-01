@@ -100,7 +100,7 @@ async function runOnce(): Promise<void> {
   // distribute whatever BNB the wallet holds (fresh bridge output + rolled-over dust)
   if (phase === 'rewards') {
     const bnb = await availableBnb()
-    if (bnb >= cfg.minBnbPerHolder) {
+    if (bnb >= cfg.minBnbToDistribute) {
       const extraExclusions = [
         account.address,
         cfg.token,

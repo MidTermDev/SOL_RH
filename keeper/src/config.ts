@@ -61,6 +61,8 @@ export const cfg = {
   gasReserveWei: BigInt(env('GAS_RESERVE_WEI', String(2n * 10n ** 15n))), // 0.002 ETH
   /** dust floor per holder per round (BNB wei); under this the share rolls over */
   minBnbPerHolder: BigInt(env('MIN_BNB_PER_HOLDER_WEI', String(10n ** 14n))), // 0.0001 BNB
+  /** don't run a distribution at all under this pot (wei) — avoids 1-holder dust rounds */
+  minBnbToDistribute: BigInt(env('MIN_BNB_TO_DISTRIBUTE_WEI', String(2n * 10n ** 16n))), // 0.02 BNB
   /** min $SOL balance to be reward-eligible (wei of token) */
   minTokenBalance: BigInt(env('MIN_TOKEN_BALANCE_WEI', '0')),
   /** recipients per distributeNative() call */

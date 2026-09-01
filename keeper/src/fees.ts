@@ -21,7 +21,8 @@ async function trySweep(label: string, fn: () => Promise<`0x${string}`>): Promis
     const receipt = await rhPublic.waitForTransactionReceipt({ hash })
     log(`${label}: ${receipt.status} (tx ${hash})`)
   } catch (err) {
-    logErr(`${label} skipped`, err instanceof Error ? err.message.split('\n')[0] : err)
+    const msg = err instanceof Error ? err.message.replace(/\s+/g, ' ').slice(0, 220) : String(err)
+    logErr(`${label} skipped`, msg)
   }
 }
 

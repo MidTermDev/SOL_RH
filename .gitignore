@@ -1,0 +1,21 @@
+# deps
+node_modules/
+
+# builds
+site/dist/
+contracts/out/
+contracts/cache/
+keeper/dist/
+
+# env / secrets — never commit keys
+.env
+.env.*
+!.env.example
+
+# keeper runtime state
+keeper/data/*.json
+!keeper/data/.gitkeep
+
+# misc
+*.log
+.DS_Store

@@ -1,0 +1,81 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* page + surfaces */
+  --color-page: #0a0a0f;
+  --color-card: #121218;
+  --color-card-2: #17171f;
+
+  /* ink */
+  --color-ink: #f5f5f7;
+  --color-ink-2: #a8a8b3;
+  --color-ink-3: #6e6e7a;
+
+  /* brand (UI accents — buttons, glows, gradient text) */
+  --color-sol-purple: #9945ff;
+  --color-sol-green: #14f195;
+  --color-bnb: #f0b90b;
+  --color-hood: #00c805;
+
+  /* chart marks — validated against --color-card (dark), do not brighten */
+  --color-chart-gold: #c98500;
+  --color-chart-green: #199e70;
+  --color-chart-purple: #9945ff;
+
+  /* chart chrome */
+  --color-grid: #26262e;
+  --color-axis: #3a3a44;
+
+  --color-line: rgba(255, 255, 255, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-sol-purple);
+  color: #fff;
+}
+
+/* soft radial glows behind the hero */
+.bg-glow {
+  background:
+    radial-gradient(600px 300px at 20% 0%, rgba(153, 69, 255, 0.16), transparent 70%),
+    radial-gradient(600px 300px at 80% 10%, rgba(20, 241, 149, 0.1), transparent 70%),
+    radial-gradient(500px 260px at 50% 30%, rgba(240, 185, 11, 0.07), transparent 70%);
+}
+
+.text-gradient {
+  background: linear-gradient(92deg, #9945ff 0%, #14f195 60%, #f0b90b 110%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}

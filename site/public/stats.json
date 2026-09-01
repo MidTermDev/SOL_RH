@@ -1,0 +1,14 @@
+{
+  "updatedAt": "",
+  "launchAt": null,
+  "phase": "pre",
+  "totalBnbDistributed": "0",
+  "totalWethCollected": "0",
+  "treasuryWeth": "0",
+  "holdersPaidTotal": 0,
+  "uniqueHolders": 0,
+  "distributionCount": 0,
+  "lastDistribution": null,
+  "nextRunAt": null,
+  "history": []
+}

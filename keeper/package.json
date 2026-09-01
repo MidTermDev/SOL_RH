@@ -1,0 +1,19 @@
+{
+  "name": "sol-rh-keeper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Claims $SOL fees on Robinhood Chain, bridges to BNB Chain, airdrops native BNB to holders.",
+  "scripts": {
+    "start": "node src/index.ts",
+    "once": "RUN_ONCE=true node src/index.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.6.0"
+  }
+}

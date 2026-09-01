@@ -95,7 +95,7 @@ async function main(): Promise<void> {
 
   // the CA is published on the site pre-launch (CREATE2-predicted). If any launch
   // param drifted and the address no longer matches, refuse to broadcast.
-  const expected = process.env.EXPECTED_TOKEN ?? '0xBfbf1db385cf7B6E5476146E0102F4655f30fa67'
+  const expected = process.env.EXPECTED_TOKEN ?? '0x5C40BA1C0c31c50f78BEF2B599b5CDd6BBb58E0d'
   if (tokenAddr.toLowerCase() !== expected.toLowerCase() && process.env.ALLOW_CA_DRIFT !== 'yes') {
     throw new Error(
       `predicted CA drift! simulation says ${tokenAddr} but the published CA is ${expected}. ` +

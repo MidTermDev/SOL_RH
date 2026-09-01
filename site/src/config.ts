@@ -8,11 +8,11 @@ export const config = {
   chainName: 'Robinhood Chain',
 
   /** token contract address on Robinhood Chain — CREATE2-predicted pre-launch, verified by launch.ts */
-  tokenAddress: '0xBfbf1db385cf7B6E5476146E0102F4655f30fa67',
+  tokenAddress: '0x5C40BA1C0c31c50f78BEF2B599b5CDd6BBb58E0d',
   /** PONS bonding curve address (pre-graduation trading venue) */
-  pairAddress: '0x9C21B472E24fD796DdBCcF25606F15B9ad478Ac7',
+  pairAddress: '0x8Ff4aA3c5289F7211BF40660B9E2F2e356C03de0',
   /** treasury wallet */
-  treasuryAddress: '0xAA03Cff328989FDDD5BF8EBb1EDEC3c75151b337',
+  treasuryAddress: '0xD9eb7B96727f5fb10Aa4E6F9dC3b5508C01954Ac',
 
   /** where holders buy */
   ponsUrl: 'https://www.ponsfamily.com',

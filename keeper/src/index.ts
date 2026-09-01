@@ -8,7 +8,7 @@ import { availableBnb, distributeBnb } from './distribute.ts'
 import { claimFees, ponsExclusions } from './fees.ts'
 import { syncHolders } from './holders.ts'
 import { log, logErr } from './log.ts'
-import { addDecimal, loadStats, saveStats } from './stats.ts'
+import { addDecimal, loadStats, saveStats, saveStatsLocal } from './stats.ts'
 
 const BPS = 10_000n
 const STATE_PATH = new URL('../data/state.json', import.meta.url).pathname
@@ -56,9 +56,15 @@ async function runOnce(): Promise<void> {
     return
   }
 
+  // ledger + stats are persisted after EVERY money movement — a crash between
+  // steps must never lose track of funds again
   const claimed = await claimFees()
   let pending = loadPendingFees() + claimed
-  if (claimed > 0n) stats.totalEthCollected = addDecimal(stats.totalEthCollected, claimed)
+  if (claimed > 0n) {
+    savePendingFees(pending)
+    stats.totalEthCollected = addDecimal(stats.totalEthCollected, claimed)
+    saveStatsLocal(stats)
+  }
 
   // never dip into gas money: only fees actually claimed are spendable
   const balance = await rhPublic.getBalance({ address: account.address })
@@ -70,22 +76,26 @@ async function runOnce(): Promise<void> {
   if (phase === 'treasury') {
     // war-chest window: everything goes to the treasury
     await sendEthToTreasury(spendable)
-    stats.treasuryEth = addDecimal(stats.treasuryEth, spendable)
     pending -= spendable
+    savePendingFees(pending)
+    stats.treasuryEth = addDecimal(stats.treasuryEth, spendable)
+    saveStatsLocal(stats)
   } else if (spendable >= cfg.minEthToProcess) {
     const treasuryCut = (spendable * (BPS - cfg.rewardsBps)) / BPS
     const rewardsCut = spendable - treasuryCut
 
     await sendEthToTreasury(treasuryCut)
-    stats.treasuryEth = addDecimal(stats.treasuryEth, treasuryCut)
     pending -= treasuryCut
+    savePendingFees(pending)
+    stats.treasuryEth = addDecimal(stats.treasuryEth, treasuryCut)
+    saveStatsLocal(stats)
 
     await bridgeEthToBnb(rewardsCut)
     pending -= rewardsCut
+    savePendingFees(pending)
   } else {
     log(`spendable ETH below floor (${formatEther(cfg.minEthToProcess)}) — accruing for next run`)
   }
-  savePendingFees(pending)
 
   // distribute whatever BNB the wallet holds (fresh bridge output + rolled-over dust)
   if (phase === 'rewards') {

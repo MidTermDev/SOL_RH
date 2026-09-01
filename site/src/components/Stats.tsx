@@ -22,6 +22,10 @@ function NextRun({ iso }: { iso: string | null }) {
     return () => clearInterval(id)
   }, [])
   if (!iso) return <Tile label="Next distribution" value="soon™" sub="keeper not armed yet" tilt="-rotate-1" />
+  const raw = new Date(iso).getTime() - Date.now()
+  // stats publish lags the keeper by design, so a long-past nextRunAt just
+  // means "between publishes" — show the cadence instead of a stuck spinner
+  if (raw < -120_000) return <Tile label="Next distribution" value="≤5 min" sub="keeper runs every 5 minutes" tilt="-rotate-1" />
   const ms = msUntil(iso)
   return <Tile label="Next distribution" value={ms === 0 ? 'running…' : countdown(ms)} sub="keeper runs on schedule" tilt="-rotate-1" />
 }

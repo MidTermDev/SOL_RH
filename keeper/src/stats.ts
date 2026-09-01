@@ -65,10 +65,16 @@ function shouldPublish(stats: Stats): boolean {
   }
 }
 
-export function saveStats(stats: Stats): void {
+/** durable local write only — called after every money movement so a mid-run
+ *  crash can never lose accounting again */
+export function saveStatsLocal(stats: Stats): void {
   stats.updatedAt = new Date().toISOString()
   mkdirSync(dirname(cfg.statsPath), { recursive: true })
   writeFileSync(cfg.statsPath, JSON.stringify(stats, null, 2))
+}
+
+export function saveStats(stats: Stats): void {
+  saveStatsLocal(stats)
 
   if (cfg.sitePublishPath && shouldPublish(stats)) {
     try {

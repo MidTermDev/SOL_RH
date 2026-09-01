@@ -4,6 +4,11 @@
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* brainrot display faces */
+  --font-chunk: 'Bungee', 'Space Grotesk', sans-serif;
+  --font-creep: 'Creepster', 'Space Grotesk', sans-serif;
+  --font-drip: 'Nosifer', 'Space Grotesk', sans-serif;
+  --font-marker: 'Permanent Marker', 'Space Grotesk', sans-serif;
 
   /* page + surfaces */
   --color-page: #0a0a0f;
@@ -18,6 +23,8 @@
   /* brand (UI accents — buttons, glows, gradient text) */
   --color-sol-purple: #9945ff;
   --color-sol-green: #14f195;
+  --color-toxic: #39ff14;
+  --color-drank: #a855f7;
   --color-bnb: #f0b90b;
   --color-hood: #00c805;
 
@@ -42,6 +49,18 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* film grain over everything — the collage feel */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 ::selection {
@@ -49,12 +68,12 @@ body {
   color: #fff;
 }
 
-/* soft radial glows behind the hero */
+/* louder radial glows behind the hero */
 .bg-glow {
   background:
-    radial-gradient(600px 300px at 20% 0%, rgba(153, 69, 255, 0.16), transparent 70%),
-    radial-gradient(600px 300px at 80% 10%, rgba(20, 241, 149, 0.1), transparent 70%),
-    radial-gradient(500px 260px at 50% 30%, rgba(240, 185, 11, 0.07), transparent 70%);
+    radial-gradient(700px 360px at 18% 0%, rgba(153, 69, 255, 0.28), transparent 70%),
+    radial-gradient(700px 360px at 82% 8%, rgba(57, 255, 20, 0.14), transparent 70%),
+    radial-gradient(560px 300px at 50% 34%, rgba(168, 85, 247, 0.14), transparent 70%);
 }
 
 .text-gradient {
@@ -64,18 +83,94 @@ body {
   color: transparent;
 }
 
+/* ── myspace chrome (the "gud tek" diamond text) ─────────────────────────── */
+.text-chrome {
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #d7e1ee 22%,
+    #93a5bc 42%,
+    #4e5c72 50%,
+    #eef3fa 54%,
+    #aebfd4 72%,
+    #ffffff 100%
+  );
+  background-size: 100% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.85)) drop-shadow(0 0 18px rgba(200, 220, 255, 0.35));
+  animation: chrome-shift 3.5s linear infinite;
+}
+@keyframes chrome-shift {
+  from { background-position: 0% 0%; }
+  to { background-position: 0% 300%; }
+}
+
+/* ── toxic green glow (the "nah bro" text) ───────────────────────────────── */
+.text-toxic {
+  color: var(--color-toxic);
+  text-shadow:
+    0 0 5px rgba(57, 255, 20, 0.9),
+    0 0 22px rgba(57, 255, 20, 0.5),
+    2px 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* ── purple drip (the "build different" text) ────────────────────────────── */
+.text-drip {
+  color: var(--color-drank);
+  text-shadow:
+    0 0 10px rgba(168, 85, 247, 0.85),
+    0 0 34px rgba(168, 85, 247, 0.45),
+    2px 3px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* ── stickers & motion ───────────────────────────────────────────────────── */
+.sticker-shadow {
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.85);
+}
+
+.hover-wiggle:hover {
+  animation: wiggle 0.35s ease-in-out infinite;
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+
+.twinkle {
+  animation: twinkle 1.8s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.7) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.15) rotate(20deg); }
+}
+
+.animate-spin-slow {
+  animation: spin 7s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 .animate-marquee {
-  animation: marquee 28s linear infinite;
+  animation: marquee 26s linear infinite;
 }
 
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%, 100% { transform: translateY(0) rotate(var(--float-rot, 0deg)); }
+  50% { transform: translateY(-10px) rotate(var(--float-rot, 0deg)); }
 }
 .animate-float-slow {
-  animation: float-slow 6s ease-in-out infinite;
+  animation: float-slow 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-chrome, .animate-marquee, .animate-float-slow, .animate-spin-slow, .twinkle, .hover-wiggle:hover {
+    animation: none;
+  }
 }

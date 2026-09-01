@@ -31,18 +31,22 @@ export function TheTek() {
   return (
     <section id="tek" className="scroll-mt-28 px-4 py-20">
       <div className="mx-auto max-w-5xl">
-        <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-          The tek<span className="text-bnb">.</span>
+        <h2 className="font-drip text-drip rotate-[-0.5deg] text-3xl leading-relaxed sm:text-5xl">
+          the tek
         </h2>
-        <p className="mt-2 max-w-2xl text-ink-2">
-          A token named after one chain, living on a second chain, paying rewards in a third chain's coin.
-          Three ecosystems, zero respect, one flawlessly executed fee loop.
+        <p className="mt-4 max-w-2xl text-ink-2">
+          A token named after one chain, living on a second chain, paying rewards in a third chain's coin.{' '}
+          <span className="font-marker text-toxic">three ecosystems, zero respect,</span> one flawlessly
+          executed fee loop.
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {steps.map((s) => (
-            <div key={s.n} className="group rounded-3xl border border-line bg-card p-6 transition hover:bg-card-2">
-              <div className={`font-mono text-sm font-semibold ${s.accent}`}>{s.n}</div>
+            <div
+              key={s.n}
+              className={`group sticker-shadow rounded-3xl border-2 border-line bg-card p-6 transition duration-300 hover:rotate-0 hover:border-drank/50 hover:bg-card-2 ${['rotate-1', '-rotate-1', '-rotate-[0.75deg]', 'rotate-[0.75deg]'][Number(s.n) - 1]}`}
+            >
+              <div className={`font-marker text-xl ${s.accent}`}>{s.n}</div>
               <h3 className="mt-2 font-display text-xl font-semibold">{s.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-2">{s.body}</p>
             </div>
@@ -50,7 +54,7 @@ export function TheTek() {
         </div>
 
         {/* the split, visually */}
-        <div className="mt-4 rounded-3xl border border-line bg-card p-6">
+        <div className="mt-6 rounded-3xl border-2 border-line bg-card p-6">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium text-ink">Where every fee goes (after minute {config.tax.treasuryPhaseMinutes})</span>
             <span className="font-mono text-xs text-ink-3">{config.tax.totalPct}% of volume</span>

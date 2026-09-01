@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="border-t border-line px-4 py-12">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 text-center">
         <div className="flex items-center gap-2.5">
-          <img src="./sol.svg" alt="" className="h-8 w-8 rounded-xl" />
+          <img src="./sol.svg" alt="" className="animate-spin-slow h-8 w-8 rounded-xl" />
           <span className="font-display text-lg font-bold tracking-tight">
             SOL<span className="text-ink-3">·on·</span>
             <span className="text-hood">HOOD</span>
@@ -26,7 +26,9 @@ export function Footer() {
           is financial advice. You can lose everything. That's part of the tek too.
         </p>
 
-        <p className="font-mono text-[10px] text-ink-3">built different (derogatory) · {new Date().getFullYear()}</p>
+        <p className="font-marker rotate-[0.5deg] text-sm text-drank" style={{ textShadow: '0 0 10px rgba(168,85,247,.6)' }}>
+          thats build different (mentally) · {new Date().getFullYear()}
+        </p>
       </div>
     </footer>
   )

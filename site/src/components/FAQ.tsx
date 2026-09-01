@@ -41,14 +41,20 @@ export function FAQ() {
   return (
     <section id="faq" className="scroll-mt-28 px-4 py-20">
       <div className="mx-auto max-w-3xl">
-        <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-          FAQ<span className="text-sol-purple">.</span>
+        <h2 className="font-creep text-toxic rotate-1 text-4xl tracking-wide sm:text-6xl"
+          style={{ textShadow: '0 0 8px rgba(57,255,20,.8), 0 0 28px rgba(57,255,20,.4), 2px 2px 0 #000' }}>
+          FAQ
         </h2>
-        <p className="mt-2 text-ink-2">Frequently asked questions. Infrequently satisfying answers.</p>
+        <p className="font-marker mt-3 -rotate-[0.5deg] text-ink-2">
+          frequently asked questions. infrequently satisfying answers. 💀
+        </p>
 
         <div className="mt-8 space-y-3">
           {faqs.map((f, i) => (
-            <div key={i} className="overflow-hidden rounded-3xl border border-line bg-card">
+            <div
+              key={i}
+              className={`overflow-hidden rounded-3xl border-2 border-line bg-card transition duration-300 hover:border-toxic/40 ${i % 2 ? '-rotate-[0.4deg]' : 'rotate-[0.4deg]'}`}
+            >
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left"

@@ -19,3 +19,8 @@ keeper/data/*.json
 # misc
 *.log
 .DS_Store
+
+# local inspiration/reference images — never publish
+/*.jpg
+/*.png
+

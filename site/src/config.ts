@@ -12,11 +12,11 @@ export const config = {
   /** PONS bonding curve address (pre-graduation trading venue) — fill in at launch */
   pairAddress: '',
   /** treasury wallet */
-  treasuryAddress: '',
+  treasuryAddress: '0xAA03Cff328989FDDD5BF8EBb1EDEC3c75151b337',
 
   /** where holders buy */
   ponsUrl: 'https://www.ponsfamily.com',
-  explorerUrl: '',
+  explorerUrl: 'https://robinhoodchain.blockscout.com',
 
   /** stats.json published by the keeper (same-origin by default) */
   statsUrl: (import.meta.env.VITE_STATS_URL as string | undefined) ?? 'stats.json',

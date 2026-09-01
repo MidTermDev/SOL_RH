@@ -71,10 +71,12 @@ export async function syncHolders(): Promise<Map<Address, bigint>> {
 
 // ── EOA screening ─────────────────────────────────────────────────────────────
 // Native BNB is paid on a DIFFERENT chain than the one holders bought on, so we
-// only ever pay addresses with no code on BOTH chains: an EOA is controlled by
-// the same key everywhere, a contract is not. Verdicts are cached; "contract"
-// is permanent, "eoa" is rechecked periodically (an EOA can become a contract
-// wallet via EIP-7702 delegation or deployment, never the reverse).
+// only ever pay addresses the same key controls everywhere: plain EOAs (no code)
+// and EIP-7702-delegated EOAs (code is the 0xef0100‖address designator — the
+// delegation changes execution, not key ownership). Real contracts (anything
+// else) are skipped: a CREATE-deployed contract on one chain says nothing about
+// who controls that address on another. All verdicts are rechecked periodically
+// since 7702 delegations come and go.
 
 interface EoaCache {
   [addr: string]: { verdict: 'eoa' | 'contract'; checkedAt: number }
@@ -94,7 +96,7 @@ export async function screenEoas(addrs: Address[]): Promise<Set<Address>> {
 
   for (const addr of addrs) {
     const hit = cache[addr]
-    if (hit && (hit.verdict === 'contract' || now - hit.checkedAt < EOA_RECHECK_MS)) {
+    if (hit && now - hit.checkedAt < EOA_RECHECK_MS) {
       if (hit.verdict === 'eoa') eoas.add(addr)
       continue
     }
@@ -102,7 +104,8 @@ export async function screenEoas(addrs: Address[]): Promise<Set<Address>> {
       rhPublic.getCode({ address: addr }),
       bscPublic.getCode({ address: addr }),
     ])
-    const isEoa = (!rhCode || rhCode === '0x') && (!bscCode || bscCode === '0x')
+    const keyControlled = (c?: string) => !c || c === '0x' || c.toLowerCase().startsWith('0xef0100')
+    const isEoa = keyControlled(rhCode) && keyControlled(bscCode)
     cache[addr] = { verdict: isEoa ? 'eoa' : 'contract', checkedAt: now }
     if (isEoa) eoas.add(addr)
   }

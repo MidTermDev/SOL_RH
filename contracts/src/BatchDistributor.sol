@@ -25,7 +25,9 @@ contract BatchDistributor {
         uint256 refund;
         for (uint256 i; i < to.length; ++i) {
             total += amounts[i];
-            (bool ok,) = to[i].call{value: amounts[i], gas: 10_000}("");
+            // 50k stipend: enough for EIP-7702 smart-account receive hooks,
+            // still bounded so one hostile recipient can't grief the batch
+            (bool ok,) = to[i].call{value: amounts[i], gas: 50_000}("");
             if (!ok) refund += amounts[i];
         }
         if (msg.value != total) revert ValueMismatch();

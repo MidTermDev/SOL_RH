@@ -2,7 +2,14 @@ import { useState } from 'react'
 import { config } from '../config'
 import { shortAddr } from '../lib/format'
 
-const tags = ['5% tax, weaponized', 'BNB rewards. yes, BNB.', 'zero utility, full transparency', '3 ecosystems disrespected at once']
+const tags = [
+  '5% tax, weaponized',
+  'BNB rewards. yes, BNB.',
+  'the most regarded tokenomics on mainnet',
+  'zero utility, full transparency',
+  '3 ecosystems disrespected at once',
+  'a safe space for regards',
+]
 
 export function Hero() {
   const [copied, setCopied] = useState(false)
@@ -32,7 +39,7 @@ export function Hero() {
           <span className="font-semibold text-ink">ETH</span>, and pays you{' '}
           <span className="font-semibold text-bnb">BNB</span> for holding it.
         </p>
-        <p className="mt-2 text-sm text-ink-3">Nothing about this makes sense. That is the tek.</p>
+        <p className="mt-2 text-sm text-ink-3">Nothing about this makes sense. This is a safe space for regards.</p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <a

@@ -22,7 +22,7 @@ const params = {
   logo: process.env.TOKEN_LOGO ?? 'https://midtermdev.github.io/SOL_RH/sol.svg',
   description:
     process.env.TOKEN_DESCRIPTION ??
-    'Solana. The token, not the blockchain. Lives on Robinhood Chain, pays real native BNB to holders on BNB Chain. 5% creator tax: 70% airdropped back as BNB, 30% treasury. Nothing about this makes sense and that is the tek.',
+    'Solana. The token, not the blockchain. Lives on Robinhood Chain, pays real native BNB to holders on BNB Chain. 5% creator tax: 70% airdropped back as BNB, 30% treasury. The most regarded tokenomics on mainnet, executed flawlessly.',
   socials: {
     twitter: process.env.SOCIAL_TWITTER ?? '',
     telegram: process.env.SOCIAL_TELEGRAM ?? '',

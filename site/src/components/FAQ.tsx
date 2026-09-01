@@ -6,6 +6,10 @@ const faqs = [
     a: "Because it isn't Solana. It's an ERC-20 on Robinhood Chain. The ticker is $SOL. The confusion is the marketing budget.",
   },
   {
+    q: 'Is this regarded?',
+    a: 'Profoundly. It also works, which makes it worse. A keeper bot claims fees on one chain, bridges them across the void, and pays you on a different chain, on schedule, like a Swiss watch with a head injury.',
+  },
+  {
     q: 'Why BNB rewards?',
     a: "We surveyed which reward token would make the least sense on a Robinhood L2 and BNB won by a landslide. Also everyone secretly loves seeing BNB appear in their wallet. It's the most honest coin in crypto — it doesn't pretend to be anything except money.",
   },

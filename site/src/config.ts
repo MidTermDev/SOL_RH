@@ -7,10 +7,10 @@ export const config = {
   name: 'Solana',
   chainName: 'Robinhood Chain',
 
-  /** token contract address on Robinhood Chain — fill in at launch */
-  tokenAddress: '',
-  /** PONS bonding curve address (pre-graduation trading venue) — fill in at launch */
-  pairAddress: '',
+  /** token contract address on Robinhood Chain — CREATE2-predicted pre-launch, verified by launch.ts */
+  tokenAddress: '0xBfbf1db385cf7B6E5476146E0102F4655f30fa67',
+  /** PONS bonding curve address (pre-graduation trading venue) */
+  pairAddress: '0x9C21B472E24fD796DdBCcF25606F15B9ad478Ac7',
   /** treasury wallet */
   treasuryAddress: '0xAA03Cff328989FDDD5BF8EBb1EDEC3c75151b337',
 

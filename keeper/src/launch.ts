@@ -93,6 +93,16 @@ async function main(): Promise<void> {
   const [tokenAddr, curveAddr] = result
   console.log(`\nsimulation OK → token ${tokenAddr} · curve ${curveAddr}`)
 
+  // the CA is published on the site pre-launch (CREATE2-predicted). If any launch
+  // param drifted and the address no longer matches, refuse to broadcast.
+  const expected = process.env.EXPECTED_TOKEN ?? '0xBfbf1db385cf7B6E5476146E0102F4655f30fa67'
+  if (tokenAddr.toLowerCase() !== expected.toLowerCase() && process.env.ALLOW_CA_DRIFT !== 'yes') {
+    throw new Error(
+      `predicted CA drift! simulation says ${tokenAddr} but the published CA is ${expected}. ` +
+        'A launch param changed. Fix the params (or update the site + set ALLOW_CA_DRIFT=yes).',
+    )
+  }
+
   if (process.env.CONFIRM !== 'yes') {
     console.log('\nDRY RUN — set CONFIRM=yes to broadcast.')
     return

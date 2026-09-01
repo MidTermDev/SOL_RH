@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2026-09-01T03:48:21.718Z",
+  "updatedAt": "2026-09-01T03:53:26.432Z",
   "launchAt": "2026-09-01T03:47:58.000Z",
   "phase": "treasury",
   "totalBnbDistributed": "0",
-  "totalEthCollected": "0.021320640176512509",
-  "treasuryEth": "0.021320640176512509",
+  "totalEthCollected": "0.661607260438680553",
+  "treasuryEth": "0.661607260438680553",
   "holdersPaidTotal": 0,
-  "uniqueHolders": 4,
+  "uniqueHolders": 124,
   "distributionCount": 0,
   "lastDistribution": null,
-  "nextRunAt": "2026-09-01T03:53:21.718Z",
+  "nextRunAt": "2026-09-01T03:58:26.432Z",
   "history": []
 }

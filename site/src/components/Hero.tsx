@@ -19,7 +19,7 @@ export function Hero() {
       <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
         <div className="animate-float-slow mb-6 flex items-center gap-2 rounded-full border border-line bg-card/60 px-4 py-1.5 text-xs font-medium text-ink-2 backdrop-blur">
           <span className="inline-block h-2 w-2 rounded-full bg-sol-green" />
-          live on {config.chainName} · paired with WETH · pays out in BNB
+          live on {config.chainName} · ETH pair · pays out in BNB
         </div>
 
         <h1 className="font-display text-6xl font-bold leading-none tracking-tighter sm:text-8xl">
@@ -29,7 +29,7 @@ export function Hero() {
         <p className="mt-4 max-w-xl text-lg text-ink-2">
           The token. Not the blockchain. It lives on{' '}
           <span className="font-semibold text-hood">Robinhood Chain</span>, trades against{' '}
-          <span className="font-semibold text-ink">WETH</span>, and pays you{' '}
+          <span className="font-semibold text-ink">ETH</span>, and pays you{' '}
           <span className="font-semibold text-bnb">BNB</span> for holding it.
         </p>
         <p className="mt-2 text-sm text-ink-3">Nothing about this makes sense. That is the tek.</p>

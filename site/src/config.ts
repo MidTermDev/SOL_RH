@@ -9,13 +9,13 @@ export const config = {
 
   /** token contract address on Robinhood Chain — fill in at launch */
   tokenAddress: '',
-  /** WETH pair / pool address — fill in at launch */
+  /** PONS bonding curve address (pre-graduation trading venue) — fill in at launch */
   pairAddress: '',
   /** treasury wallet */
   treasuryAddress: '',
 
   /** where holders buy */
-  ponsUrl: 'https://pons.fun',
+  ponsUrl: 'https://www.ponsfamily.com',
   explorerUrl: '',
 
   /** stats.json published by the keeper (same-origin by default) */

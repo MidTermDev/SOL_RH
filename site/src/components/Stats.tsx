@@ -77,13 +77,13 @@ export function StatsSection({ stats, loaded }: { stats: Stats; loaded: boolean 
         {/* tiles */}
         <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
           <Tile
-            label="Fees collected (WETH)"
-            value={fmt(stats.totalWethCollected)}
+            label="Fees collected (ETH)"
+            value={fmt(stats.totalEthCollected)}
             sub="5% of every swap, claimed by the keeper"
           />
           <Tile
-            label="Treasury war chest (WETH)"
-            value={fmt(stats.treasuryWeth)}
+            label="Treasury war chest (ETH)"
+            value={fmt(stats.treasuryEth)}
             sub={`${config.tax.treasuryPct}% cut + first ${config.tax.treasuryPhaseMinutes} min of fees`}
           />
           <Tile

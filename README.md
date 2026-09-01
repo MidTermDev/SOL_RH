@@ -1,23 +1,23 @@
 # SOL on HOOD
 
-A token called **Solana ($SOL)**, launched on **Robinhood Chain**, paired with **WETH**, paying rewards in **real native BNB on BNB Chain**. Three ecosystems, zero respect, one flawlessly executed fee loop.
+A token called **Solana ($SOL)**, launched via **PONS** on **Robinhood Chain**, trading against **ETH**, paying rewards in **real native BNB on BNB Chain**. Three ecosystems, zero respect, one flawlessly executed fee loop.
 
 ## How it works
 
 ```
-        trade $SOL/WETH on Robinhood Chain
-                      │ 5% fee
+   trade $SOL on Robinhood Chain (PONS curve → Uniswap v4, ETH quote)
+                      │ 5% creator tax (+1% PONS base fee)
                       ▼
-              keeper claims fees (WETH)
+        keeper sweeps + claims fees from the PONS escrow (native ETH)
                       │
       ┌───── first 10 min after launch ─────┐
       │  100% → treasury (war chest for     │
       │        manual buybacks)             │
       └──────────────── then ───────────────┘
                       │
-            30% → treasury (WETH)
-            70% → bridged to BNB Chain,
-                  swapped to native BNB
+            30% → treasury (ETH)
+            70% → bridged to BNB Chain via LI.FI,
+                  arrives as native BNB
                       │
                       ▼
       pro-rata airdrop to every holder's wallet
@@ -37,8 +37,8 @@ Fun fact discovered while building this: **BNB does not exist on Robinhood Chain
 ## Verified chain facts (2026-09-01)
 
 - Robinhood Chain mainnet: chain id **4663**, RPC `https://rpc.mainnet.chain.robinhood.com`, gas token ETH, explorer [robinhoodchain.blockscout.com](https://robinhoodchain.blockscout.com)
-- Canonical WETH: `0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`
-- Bridging: LI.FI / Relay / Across / Stargate are the aggregators Robinhood's own docs point to; the keeper uses LI.FI (4663 → 56, WETH → native BNB)
+- PONS V2 contracts (factory, fee escrow, v4 hook): see [docs/PONS.md](docs/PONS.md) — all Blockscout-verified
+- Bridging: LI.FI / Relay / Across / Stargate are the aggregators Robinhood's own docs point to; the keeper uses LI.FI (4663 → 56, native ETH → native BNB, route tested live)
 
 ## Launch runbook
 
@@ -49,8 +49,14 @@ Fun fact discovered while building this: **BNB does not exist on Robinhood Chain
    forge script script/DeployDistributor.s.sol \
      --rpc-url https://bsc-rpc.publicnode.com --broadcast --private-key $KEEPER_PK
    ```
-3. **Launch $SOL on PONS** (WETH pair, 5% fee) — see `docs/PONS.md`. Note the token address, pool address, launch block, and exact launch time.
-4. **Configure the keeper** — `cp keeper/.env.example keeper/.env`, fill in every address, set `LAUNCH_AT`/`LAUNCH_BLOCK`, put the pool + locker into `EXCLUDED_ADDRESSES`.
+3. **Launch $SOL on PONS** from the keeper wallet (it must be the deployer to sweep fees):
+   ```bash
+   cd keeper && npm install
+   KEEPER_PRIVATE_KEY=0x... node src/launch.ts               # dry run: simulates, prints token + curve
+   KEEPER_PRIVATE_KEY=0x... CONFIRM=yes node src/launch.ts   # broadcasts, prints .env lines to paste
+   ```
+   This launches with `creatorTaxBps=500` (our 5%), native ETH quote, buybacks off, economics pinned. See `docs/PONS.md` for every verified detail.
+4. **Configure the keeper** — `cp keeper/.env.example keeper/.env`, paste the `TOKEN_ADDRESS`/`LAUNCH_AT`/`LAUNCH_BLOCK` lines the launch script printed, set the treasury + distributor addresses. PONS's curve/hook/escrow/locker are auto-excluded from rewards.
 5. **Fill in `site/src/config.ts`** (token, pair, treasury, explorer + chart links) and deploy the site (any static host; `npm run build` in `site/`).
 6. **Arm the keeper**:
    ```bash
@@ -67,4 +73,4 @@ Fun fact discovered while building this: **BNB does not exist on Robinhood Chain
 
 ## Disclaimers
 
-Meme coin. 5% swap fee as described above. Not affiliated with Solana Labs, Binance, or Robinhood. No utility, no roadmap, no financial advice. You can lose everything.
+Meme coin. 5% creator tax as described above (PONS adds its own 1% base fee). Not affiliated with Solana Labs, Binance, Robinhood, or PONS. No utility, no roadmap, no financial advice. You can lose everything.

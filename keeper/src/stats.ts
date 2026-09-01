@@ -17,8 +17,8 @@ export interface Stats {
   launchAt: string | null
   phase: 'pre' | 'treasury' | 'rewards'
   totalBnbDistributed: string
-  totalWethCollected: string
-  treasuryWeth: string
+  totalEthCollected: string
+  treasuryEth: string
   holdersPaidTotal: number
   uniqueHolders: number
   distributionCount: number
@@ -32,8 +32,8 @@ const ZERO: Stats = {
   launchAt: null,
   phase: 'pre',
   totalBnbDistributed: '0',
-  totalWethCollected: '0',
-  treasuryWeth: '0',
+  totalEthCollected: '0',
+  treasuryEth: '0',
   holdersPaidTotal: 0,
   uniqueHolders: 0,
   distributionCount: 0,

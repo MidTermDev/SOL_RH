@@ -1,20 +1,21 @@
-import { erc20Abi } from './abi.ts'
-import { account, bscPublic, rhPublic, rhWallet } from './chains.ts'
+import { bscPublic, rhPublic, rhWallet } from './chains.ts'
+import { account } from './chains.ts'
 import { cfg } from './config.ts'
 import { log } from './log.ts'
 
 /**
- * Bridge WETH (Robinhood Chain, id 4663) → native BNB (BNB Chain, id 56) via
- * LI.FI — one of the aggregators Robinhood's own bridging docs point to. The
- * quote's transactionRequest handles swap+bridge in a single tx from our side.
+ * Bridge native ETH (Robinhood Chain, id 4663) → native BNB (BNB Chain, id 56)
+ * via LI.FI — one of the aggregators Robinhood's own bridging docs point to.
+ * Route verified live 2026-09-01 (Symbiosis, ~43s). Native→native, so no
+ * approvals are involved; the quote's transactionRequest carries the value.
  */
 
 const LIFI = 'https://li.quest/v1'
 const NATIVE = '0x0000000000000000000000000000000000000000'
 
 interface LifiQuote {
-  estimate: { toAmountMin: string; approvalAddress: string }
-  transactionRequest: { to: `0x${string}`; data: `0x${string}`; value?: string; gasLimit?: string }
+  estimate: { toAmountMin: string }
+  transactionRequest: { to: `0x${string}`; data: `0x${string}`; value: string; gasLimit?: string }
   tool: string
 }
 
@@ -22,7 +23,7 @@ async function getQuote(amountWei: bigint): Promise<LifiQuote> {
   const params = new URLSearchParams({
     fromChain: '4663',
     toChain: '56',
-    fromToken: cfg.weth,
+    fromToken: NATIVE,
     toToken: NATIVE,
     fromAmount: amountWei.toString(),
     fromAddress: account.address,
@@ -50,34 +51,16 @@ async function waitForStatus(txHash: `0x${string}`): Promise<void> {
 }
 
 /** @returns BNB received on BNB Chain (wei), measured as the real balance delta */
-export async function bridgeWethToBnb(amountWei: bigint): Promise<bigint> {
+export async function bridgeEthToBnb(amountWei: bigint): Promise<bigint> {
   const bnbBefore = await bscPublic.getBalance({ address: account.address })
   const quote = await getQuote(amountWei)
-  log(`bridging ${amountWei} WETH-wei → BNB via ${quote.tool}, min out ${quote.estimate.toAmountMin}`)
-
-  // approve if needed
-  const allowance = await rhPublic.readContract({
-    address: cfg.weth,
-    abi: erc20Abi,
-    functionName: 'allowance',
-    args: [account.address, quote.estimate.approvalAddress as `0x${string}`],
-  })
-  if (allowance < amountWei) {
-    const approveTx = await rhWallet.writeContract({
-      address: cfg.weth,
-      abi: erc20Abi,
-      functionName: 'approve',
-      args: [quote.estimate.approvalAddress as `0x${string}`, amountWei],
-    })
-    await rhPublic.waitForTransactionReceipt({ hash: approveTx })
-    log(`approved bridge spender: ${approveTx}`)
-  }
+  log(`bridging ${amountWei} ETH-wei → BNB via ${quote.tool}, min out ${quote.estimate.toAmountMin}`)
 
   const tr = quote.transactionRequest
   const txHash = await rhWallet.sendTransaction({
     to: tr.to,
     data: tr.data,
-    value: tr.value ? BigInt(tr.value) : 0n,
+    value: BigInt(tr.value),
     gas: tr.gasLimit ? BigInt(tr.gasLimit) : undefined,
   })
   const receipt = await rhPublic.waitForTransactionReceipt({ hash: txHash })

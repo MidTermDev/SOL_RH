@@ -1,15 +1,28 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname } from 'node:path'
 import { formatEther } from 'viem'
-import { erc20Abi } from './abi.ts'
 import { account, rhPublic, rhWallet } from './chains.ts'
 import { cfg } from './config.ts'
-import { bridgeWethToBnb } from './bridge.ts'
+import { bridgeEthToBnb } from './bridge.ts'
 import { availableBnb, distributeBnb } from './distribute.ts'
-import { claimFees } from './fees.ts'
+import { claimFees, ponsExclusions } from './fees.ts'
 import { syncHolders } from './holders.ts'
 import { log, logErr } from './log.ts'
 import { addDecimal, loadStats, saveStats } from './stats.ts'
 
 const BPS = 10_000n
+const STATE_PATH = new URL('../data/state.json', import.meta.url).pathname
+
+/** internal ledger: claimed fees not yet split, kept separate from gas money */
+function loadPendingFees(): bigint {
+  if (!existsSync(STATE_PATH)) return 0n
+  return BigInt((JSON.parse(readFileSync(STATE_PATH, 'utf8')) as { pendingFeesWei: string }).pendingFeesWei)
+}
+
+function savePendingFees(wei: bigint): void {
+  mkdirSync(dirname(STATE_PATH), { recursive: true })
+  writeFileSync(STATE_PATH, JSON.stringify({ pendingFeesWei: wei.toString() }, null, 2))
+}
 
 function currentPhase(): 'pre' | 'treasury' | 'rewards' {
   const launch = new Date(cfg.launchAt).getTime()
@@ -19,26 +32,12 @@ function currentPhase(): 'pre' | 'treasury' | 'rewards' {
   return 'rewards'
 }
 
-async function wethBalance(): Promise<bigint> {
-  return rhPublic.readContract({
-    address: cfg.weth,
-    abi: erc20Abi,
-    functionName: 'balanceOf',
-    args: [account.address],
-  })
-}
-
-async function sendWethToTreasury(amount: bigint): Promise<void> {
+async function sendEthToTreasury(amount: bigint): Promise<void> {
   if (amount === 0n) return
-  const hash = await rhWallet.writeContract({
-    address: cfg.weth,
-    abi: erc20Abi,
-    functionName: 'transfer',
-    args: [cfg.treasury, amount],
-  })
+  const hash = await rhWallet.sendTransaction({ to: cfg.treasury, value: amount })
   const receipt = await rhPublic.waitForTransactionReceipt({ hash })
   if (receipt.status !== 'success') throw new Error(`treasury transfer reverted: ${hash}`)
-  log(`sent ${formatEther(amount)} WETH to treasury (tx ${hash})`)
+  log(`sent ${formatEther(amount)} ETH to treasury (tx ${hash})`)
 }
 
 async function runOnce(): Promise<void> {
@@ -58,32 +57,47 @@ async function runOnce(): Promise<void> {
   }
 
   const claimed = await claimFees()
-  if (claimed > 0n) stats.totalWethCollected = addDecimal(stats.totalWethCollected, claimed)
+  let pending = loadPendingFees() + claimed
+  if (claimed > 0n) stats.totalEthCollected = addDecimal(stats.totalEthCollected, claimed)
 
-  const weth = await wethBalance()
-  log(`phase=${phase} · claimed=${formatEther(claimed)} WETH · wallet=${formatEther(weth)} WETH`)
+  // never dip into gas money: only fees actually claimed are spendable
+  const balance = await rhPublic.getBalance({ address: account.address })
+  const headroom = balance > cfg.gasReserveWei ? balance - cfg.gasReserveWei : 0n
+  const spendable = pending < headroom ? pending : headroom
+
+  log(`phase=${phase} · claimed=${formatEther(claimed)} · pending=${formatEther(pending)} · spendable=${formatEther(spendable)} ETH`)
 
   if (phase === 'treasury') {
     // war-chest window: everything goes to the treasury
-    await sendWethToTreasury(weth)
-    stats.treasuryWeth = addDecimal(stats.treasuryWeth, weth)
-  } else if (weth >= cfg.minWethToProcess) {
-    const treasuryCut = (weth * (BPS - cfg.rewardsBps)) / BPS
-    const rewardsCut = weth - treasuryCut
+    await sendEthToTreasury(spendable)
+    stats.treasuryEth = addDecimal(stats.treasuryEth, spendable)
+    pending -= spendable
+  } else if (spendable >= cfg.minEthToProcess) {
+    const treasuryCut = (spendable * (BPS - cfg.rewardsBps)) / BPS
+    const rewardsCut = spendable - treasuryCut
 
-    await sendWethToTreasury(treasuryCut)
-    stats.treasuryWeth = addDecimal(stats.treasuryWeth, treasuryCut)
+    await sendEthToTreasury(treasuryCut)
+    stats.treasuryEth = addDecimal(stats.treasuryEth, treasuryCut)
+    pending -= treasuryCut
 
-    await bridgeWethToBnb(rewardsCut)
+    await bridgeEthToBnb(rewardsCut)
+    pending -= rewardsCut
   } else {
-    log(`WETH below floor (${formatEther(cfg.minWethToProcess)}) — accruing for next run`)
+    log(`spendable ETH below floor (${formatEther(cfg.minEthToProcess)}) — accruing for next run`)
   }
+  savePendingFees(pending)
 
   // distribute whatever BNB the wallet holds (fresh bridge output + rolled-over dust)
   if (phase === 'rewards') {
     const bnb = await availableBnb()
     if (bnb >= cfg.minBnbPerHolder) {
-      const extraExclusions = [account.address, cfg.token, cfg.treasury, cfg.distributor]
+      const extraExclusions = [
+        account.address,
+        cfg.token,
+        cfg.treasury,
+        cfg.distributor,
+        ...(await ponsExclusions()),
+      ]
       const result = await distributeBnb(balances, bnb, extraExclusions)
       if (result.holdersPaid > 0) {
         const rec = {

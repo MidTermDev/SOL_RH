@@ -16,10 +16,10 @@ export interface Stats {
   phase: 'pre' | 'treasury' | 'rewards'
   /** cumulative BNB airdropped to holders (decimal string) */
   totalBnbDistributed: string
-  /** cumulative WETH collected in fees (decimal string) */
-  totalWethCollected: string
-  /** cumulative WETH sent to treasury (decimal string) */
-  treasuryWeth: string
+  /** cumulative ETH collected in fees (decimal string) */
+  totalEthCollected: string
+  /** cumulative ETH sent to treasury (decimal string) */
+  treasuryEth: string
   /** cumulative number of individual payouts */
   holdersPaidTotal: number
   /** current unique holder count */
@@ -35,8 +35,8 @@ export const EMPTY_STATS: Stats = {
   launchAt: null,
   phase: 'pre',
   totalBnbDistributed: '0',
-  totalWethCollected: '0',
-  treasuryWeth: '0',
+  totalEthCollected: '0',
+  treasuryEth: '0',
   holdersPaidTotal: 0,
   uniqueHolders: 0,
   distributionCount: 0,

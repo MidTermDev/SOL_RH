@@ -27,20 +27,23 @@ export const cfg = {
   keeperPrivateKey: env('KEEPER_PRIVATE_KEY') as `0x${string}`,
 
   // ── addresses ─────────────────────────────────────────────────────────────
-  /** $SOL token on Robinhood Chain */
+  /** $SOL token on Robinhood Chain (printed by launch.ts) */
   token: envAddr('TOKEN_ADDRESS'),
-  /** canonical WETH on Robinhood Chain (verified via official docs) */
-  weth: envAddr('WETH_ADDRESS', '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73'),
-  /** treasury wallet on Robinhood Chain (receives the 30% + war-chest phase) */
+  /** treasury wallet on Robinhood Chain (receives the 30% + war-chest phase, in ETH) */
   treasury: envAddr('TREASURY_ADDRESS'),
   /** BatchDistributor on BNB Chain */
   distributor: envAddr('DISTRIBUTOR_ADDRESS'),
-  /** never pay these (pool, locker, token contract, burn addrs are auto-added) */
+  /** never pay these (curve, locker, hook are auto-added; add anything extra here) */
   excluded: envAddrList('EXCLUDED_ADDRESSES'),
 
-  // ── PONS fee claiming ─────────────────────────────────────────────────────
-  /** PONS contract the keeper claims accrued creator fees from */
-  ponsFeeContract: process.env.PONS_FEE_CONTRACT ? getAddress(process.env.PONS_FEE_CONTRACT) : null,
+  // ── PONS (verified mainnet addresses, 2026-09-01 — see docs/PONS.md) ──────
+  // curve address, graduation phase, and the v4 poolId are all derived from the
+  // factory at runtime, so only the token address is needed after launch
+  ponsFactory: envAddr('PONS_FACTORY', '0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e'),
+  /** pull-payment escrow all creator fees land in (native ETH for ETH launches) */
+  ponsFeeEscrow: envAddr('PONS_FEE_ESCROW', '0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e'),
+  /** post-graduation Uniswap v4 hook that accrues swap fees */
+  ponsHook: envAddr('PONS_HOOK', '0xE5e702641Ea86F4ae6cC3cDaeD2B886f976Be044'),
 
   // ── schedule / economics ──────────────────────────────────────────────────
   /** ISO timestamp of launch; war-chest phase is measured from here */
@@ -52,8 +55,10 @@ export const cfg = {
   rewardsBps: BigInt(env('REWARDS_BPS', '7000')),
   runIntervalMinutes: Number(env('RUN_INTERVAL_MINUTES', '30')),
 
-  /** skip a run if claimed fees are below this much WETH (wei) — not worth the bridge */
-  minWethToProcess: BigInt(env('MIN_WETH_TO_PROCESS_WEI', String(5n * 10n ** 15n))), // 0.005 WETH
+  /** skip a run if claimable ETH is below this (wei) — not worth the bridge */
+  minEthToProcess: BigInt(env('MIN_ETH_TO_PROCESS_WEI', String(5n * 10n ** 15n))), // 0.005 ETH
+  /** ETH kept on Robinhood Chain for gas, never spent on rewards/treasury */
+  gasReserveWei: BigInt(env('GAS_RESERVE_WEI', String(2n * 10n ** 15n))), // 0.002 ETH
   /** dust floor per holder per round (BNB wei); under this the share rolls over */
   minBnbPerHolder: BigInt(env('MIN_BNB_PER_HOLDER_WEI', String(10n ** 14n))), // 0.0001 BNB
   /** min $SOL balance to be reward-eligible (wei of token) */

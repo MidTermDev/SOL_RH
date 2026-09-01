@@ -4,7 +4,7 @@ const steps = [
   {
     n: '01',
     title: 'You trade $SOL',
-    body: `Every buy and sell on the WETH pair takes a ${config.tax.totalPct}% fee. Standard degen stuff so far.`,
+    body: `Every buy and sell takes our ${config.tax.totalPct}% creator tax (PONS skims its own 1% on top — everyone eats). Launches on a PONS bonding curve vs ETH, graduates to a Uniswap v4 pool at 4.2 ETH raised. Standard degen stuff so far.`,
     accent: 'text-sol-purple',
   },
   {

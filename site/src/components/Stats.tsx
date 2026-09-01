@@ -1,23 +1,9 @@
 import { useEffect, useState } from 'react'
 import { config } from '../config'
+import { useBnbPrice } from '../hooks/useBnbPrice'
 import { countdown, fmt, msUntil, timeAgo } from '../lib/format'
 import type { Stats } from '../types'
 import { RewardsChart } from './RewardsChart'
-
-function PhaseBadge({ stats }: { stats: Stats }) {
-  const map = {
-    pre: { txt: 'pre-launch', dot: 'bg-ink-3' },
-    treasury: { txt: 'war-chest phase — all fees → treasury', dot: 'bg-bnb' },
-    rewards: { txt: 'rewards phase — 70% → BNB airdrops', dot: 'bg-sol-green' },
-  } as const
-  const m = map[stats.phase]
-  return (
-    <span className="flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-xs font-medium text-ink-2">
-      <span className={`h-2 w-2 rounded-full ${m.dot} ${stats.phase !== 'pre' ? 'animate-pulse' : ''}`} />
-      {m.txt}
-    </span>
-  )
-}
 
 function Tile({ label, value, sub, tilt = '' }: { label: string; value: string; sub?: string; tilt?: string }) {
   return (
@@ -41,15 +27,13 @@ function NextRun({ iso }: { iso: string | null }) {
 }
 
 export function StatsSection({ stats, loaded }: { stats: Stats; loaded: boolean }) {
+  const bnbUsd = useBnbPrice()
   return (
     <section id="stats" className="scroll-mt-28 px-4 py-20">
       <div className="mx-auto max-w-5xl">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-chunk text-chrome -rotate-1 text-3xl sm:text-5xl">
-            THE RECEIPTS
-          </h2>
-          <PhaseBadge stats={stats} />
-        </div>
+        <h2 className="font-chunk text-chrome -rotate-1 text-3xl sm:text-5xl">
+          THE RECEIPTS
+        </h2>
         <p className="mt-3 text-ink-2">
           Every fee claimed, every wei of BNB airdropped — tracked here, verifiable on-chain.{' '}
           <span className="font-marker text-toxic">trust nobody, read the txs 🧠</span>
@@ -66,6 +50,11 @@ export function StatsSection({ stats, loaded }: { stats: Stats; loaded: boolean 
               {fmt(stats.totalBnbDistributed)}
             </span>
             <span className="font-display text-2xl font-semibold text-bnb sm:text-3xl">BNB</span>
+            {bnbUsd !== null && Number(stats.totalBnbDistributed) > 0 && (
+              <span className="font-display text-xl font-medium text-ink-2 sm:text-2xl">
+                ≈ ${fmt(Number(stats.totalBnbDistributed) * bnbUsd, { maxDp: 0 })}
+              </span>
+            )}
           </div>
           <div className="mt-2 text-xs text-ink-3">
             {stats.lastDistribution

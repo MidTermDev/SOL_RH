@@ -35,17 +35,29 @@ async function getQuote(amountWei: bigint): Promise<LifiQuote> {
   return (await res.json()) as LifiQuote
 }
 
-async function waitForStatus(txHash: `0x${string}`): Promise<void> {
+/**
+ * Wait for the BNB to actually land, trusting the destination-chain balance
+ * over LI.FI's status API (which has been seen reporting PENDING/UNKNOWN_ERROR
+ * long after the funds arrived). Status is only consulted for hard failures.
+ */
+async function waitForArrival(txHash: `0x${string}`, bnbBefore: bigint): Promise<bigint> {
   const deadline = Date.now() + 30 * 60 * 1000
   while (Date.now() < deadline) {
-    const res = await fetch(`${LIFI}/status?txHash=${txHash}`)
-    if (res.ok) {
-      const s = (await res.json()) as { status: string; substatus?: string }
-      log(`bridge status: ${s.status}${s.substatus ? ` (${s.substatus})` : ''}`)
-      if (s.status === 'DONE') return
-      if (s.status === 'FAILED') throw new Error(`bridge FAILED for ${txHash}`)
+    const bal = await bscPublic.getBalance({ address: account.address })
+    if (bal > bnbBefore) return bal - bnbBefore
+
+    try {
+      const res = await fetch(`${LIFI}/status?txHash=${txHash}`)
+      if (res.ok) {
+        const s = (await res.json()) as { status: string; substatus?: string }
+        log(`bridge status: ${s.status}${s.substatus ? ` (${s.substatus})` : ''}`)
+        if (s.status === 'FAILED') throw new Error(`bridge FAILED for ${txHash}`)
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('bridge FAILED')) throw err
+      // status API flake — the balance check above is the real signal
     }
-    await new Promise((r) => setTimeout(r, 20_000))
+    await new Promise((r) => setTimeout(r, 15_000))
   }
   throw new Error(`bridge timed out for ${txHash}`)
 }
@@ -67,12 +79,7 @@ export async function bridgeEthToBnb(amountWei: bigint): Promise<bigint> {
   if (receipt.status !== 'success') throw new Error(`bridge tx reverted: ${txHash}`)
   log(`bridge tx sent on Robinhood Chain: ${txHash}`)
 
-  await waitForStatus(txHash)
-
-  // trust the chain, not the API, for the amount received
-  const bnbAfter = await bscPublic.getBalance({ address: account.address })
-  const received = bnbAfter - bnbBefore
-  if (received <= 0n) throw new Error('bridge reported DONE but no BNB arrived')
+  const received = await waitForArrival(txHash, bnbBefore)
   log(`received ${received} BNB-wei on BNB Chain`)
   return received
 }

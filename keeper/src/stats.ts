@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { formatEther, parseEther } from 'viem'
 import { cfg } from './config.ts'
@@ -52,12 +52,25 @@ export function addDecimal(a: string, weiDelta: bigint): string {
   return formatEther(parseEther(a) + weiDelta)
 }
 
+/** publish when something meaningful changed, or as a ≥25-min heartbeat —
+ *  every push triggers a Pages rebuild, so don't spam it with timestamp churn */
+function shouldPublish(stats: Stats): boolean {
+  try {
+    const prev = JSON.parse(readFileSync(cfg.sitePublishPath, 'utf8')) as Stats
+    const strip = (s: Stats) => JSON.stringify({ ...s, updatedAt: '', nextRunAt: '' })
+    if (strip(prev) !== strip(stats)) return true
+    return Date.now() - statSync(cfg.sitePublishPath).mtimeMs > 25 * 60_000
+  } catch {
+    return true
+  }
+}
+
 export function saveStats(stats: Stats): void {
   stats.updatedAt = new Date().toISOString()
   mkdirSync(dirname(cfg.statsPath), { recursive: true })
   writeFileSync(cfg.statsPath, JSON.stringify(stats, null, 2))
 
-  if (cfg.sitePublishPath) {
+  if (cfg.sitePublishPath && shouldPublish(stats)) {
     try {
       copyFileSync(cfg.statsPath, cfg.sitePublishPath)
       const repoDir = dirname(cfg.sitePublishPath)

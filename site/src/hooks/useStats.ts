@@ -12,7 +12,9 @@ export function useStats(): { stats: Stats; loaded: boolean } {
 
     async function pull() {
       try {
-        const res = await fetch(config.statsUrl, { cache: 'no-store' })
+        // unique query per poll: 'no-store' beats the browser cache, but the
+        // Pages CDN caches stats.json ~10 min — a fresh query string skips it
+        const res = await fetch(`${config.statsUrl}?t=${Date.now()}`, { cache: 'no-store' })
         if (!res.ok) return
         const data = (await res.json()) as Stats
         if (alive) {

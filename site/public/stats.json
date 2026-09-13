@@ -1,20 +1,20 @@
 {
-  "updatedAt": "2026-09-13T21:32:08.128Z",
+  "updatedAt": "2026-09-13T21:52:34.610Z",
   "launchAt": "2026-09-01T03:47:58.000Z",
   "phase": "rewards",
-  "totalBnbDistributed": "7.650289371664973259",
-  "totalEthCollected": "3.621209461211143155",
-  "treasuryEth": "1.578929077576665635",
-  "holdersPaidTotal": 1882,
-  "uniqueHolders": 120,
-  "distributionCount": 18,
+  "totalBnbDistributed": "7.80609407393365932",
+  "totalEthCollected": "3.687973827961927266",
+  "treasuryEth": "1.598362866629241668",
+  "holdersPaidTotal": 1932,
+  "uniqueHolders": 119,
+  "distributionCount": 19,
   "lastDistribution": {
-    "t": "2026-09-02T09:59:12.098Z",
-    "bnb": "0.414102701017222741",
-    "holders": 87,
-    "txHash": "0xe6b2e55dbaa8be7fe0a2e2aa544551165ea50e2ca7b85bad969fb196c295e499"
+    "t": "2026-09-13T21:52:34.610Z",
+    "bnb": "0.155804702268686061",
+    "holders": 50,
+    "txHash": "0x1f4179468d26aad96c36d71a9dc4f29786638953336a131258cd59b8c168494a"
   },
-  "nextRunAt": "2026-09-13T21:37:08.128Z",
+  "nextRunAt": "2026-09-13T21:57:34.610Z",
   "history": [
     {
       "t": "2026-09-01T04:03:29.000Z",
@@ -123,6 +123,12 @@
       "bnb": "0.414102701017222741",
       "holders": 87,
       "txHash": "0xe6b2e55dbaa8be7fe0a2e2aa544551165ea50e2ca7b85bad969fb196c295e499"
+    },
+    {
+      "t": "2026-09-13T21:52:34.610Z",
+      "bnb": "0.155804702268686061",
+      "holders": 50,
+      "txHash": "0x1f4179468d26aad96c36d71a9dc4f29786638953336a131258cd59b8c168494a"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-13T02:40:09.208Z",
+  "updatedAt": "2026-09-13T03:05:18.028Z",
   "launchAt": "2026-09-01T03:47:58.000Z",
   "phase": "rewards",
   "totalBnbDistributed": "7.650289371664973259",
@@ -14,7 +14,7 @@
     "holders": 87,
     "txHash": "0xe6b2e55dbaa8be7fe0a2e2aa544551165ea50e2ca7b85bad969fb196c295e499"
   },
-  "nextRunAt": "2026-09-13T02:45:09.208Z",
+  "nextRunAt": "2026-09-13T03:10:18.028Z",
   "history": [
     {
       "t": "2026-09-01T04:03:29.000Z",
